@@ -2,7 +2,7 @@
 # DATA ANALYSIS PROJECT · GROUP 2
 # Description: Extraction and cleaning of hourly data from the ESIOS API
 # Indicators: 541 (forecast) and 551 (actual production)
- 
+
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
@@ -14,6 +14,7 @@ HEADERS = {
     'x-api-key'   : TOKEN,
     'User-Agent'  : 'esios-api-client'
 }
+
 while True:
     try:
         start = datetime.strptime(input("Enter start date (dd/mm/yyyy): "), "%d/%m/%Y")
@@ -74,14 +75,11 @@ df = cleaning(df)     #Second pass after removing outliers
 
 # From the current hour onward, there is no actual generation → 0 MW
 df['datetime'] = df['datetime'].dt.tz_localize(None)
-
 df.loc[df['datetime'] > datetime.now(), 'indicator_551'] = 0
-
 df['datetime'] = df['datetime'].astype(str)
 
 df['indicator_551'] = df['indicator_551'] / 12     # real
 df['indicator_541'] = df['indicator_541'] / 4    # forecast
-
 
 df.to_excel("WIND_DATAv2.xlsx", index=False)
 print("Datos limpios exportados a 'WIND_DATAv2.xlsx'")
@@ -161,4 +159,3 @@ import webbrowser
 
 webbrowser.open("forecast_vs_real_time.html")
 webbrowser.open("forecast_vs_real_scatter.html")
-
